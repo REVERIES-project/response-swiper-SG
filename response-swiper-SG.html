@@ -1,0 +1,105 @@
+<link rel="import" href="../polymer/polymer.html">
+<link rel="import" href="../iron-swipeable-container/iron-swipeable-container.html">
+<link rel="import" href="../paper-icon-button/paper-icon-button.html">
+<link rel="import" href="../iron-icons/iron-icons.html">
+
+<!--
+`response-swiper-SG`
+
+
+@demo demo/index.html
+-->
+
+<dom-module id="response-swiper-SG">
+  <template>
+    <style>
+      :host {
+        display: block;
+      }
+      paper-icon-button.giant {
+          width: 50px;
+          height: 50px;
+        }
+
+    </style>
+    <h2> [[question]]</h2>
+    <h3>Enlever les mauvaises réponses</h3>
+
+
+    <iron-swipeable-container id="listeReponses">
+      <template is="dom-repeat" items="[[tabReponses]]">
+        <div class="laClasse" data-item$=[[item]]>
+          [[item.assertion]]
+        </div>
+      </template>
+    </iron-swipeable-container>
+
+
+    <!--<paper-icon-button icon="undo" title="Annuler" class="giant" on-click="resetStatus"></paper-icon-button> !-->
+    <paper-icon-button icon="check" title="Valider" class="giant" on-click="valider"></paper-icon-button>
+    
+
+  </template>
+
+  <script>
+    Polymer({
+
+      is: 'response-swiper-SG',
+
+      properties: {
+        question: {
+          type: String
+          
+        },
+        tabReponses: {
+          type: Array
+         
+        },
+        _check:{
+          type:Number,
+          value:0,
+        },
+        _nbFalse:{
+          type:Number,
+          value:0,
+        }
+      },
+
+      valider: function(){
+        console.log("click valider")
+        if(this._check==this._nbFalse)
+          alert("GAGNé !")
+         else
+          alert("Perdu :()")
+      },
+
+      ready(){
+        this.getFalseNumber()
+        this.$.listeReponses.addEventListener('iron-swipe',this.onSwipe.bind(this))
+      },
+      getFalseNumber(){
+        for(var item of this.tabReponses){
+          if(!item.vrai){
+            this._nbFalse++
+          }
+        }
+      },
+      resetStatus(){
+        this._check=0
+        var temp=this.listeReponses
+        this.listeReponses=[]
+        this.listeReponses=temp
+
+      },
+      
+      onSwipe: function(evt){
+        console.log("click valider",JSON.parse(evt.detail.target.dataset.item).vrai)
+        if(JSON.parse(evt.detail.target.dataset.item).vrai)
+          this._check--
+        else
+          this._check++
+       // alert("swip ! "+ evt.detail.target.dataset);
+      }
+    });
+  </script>
+</dom-module>
